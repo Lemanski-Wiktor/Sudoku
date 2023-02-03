@@ -3,16 +3,19 @@
 	import LoadFile from "./components/LoadFile.svelte";
 	import Game from "./components/Game.svelte";
 
-	export let url = "";
+	 let url = "";
 
 </script>
 	
 <main>
 	<Router url="{url}">
-
-		<Route path='' component='{LoadFile}'/>
-		<Route path='game' component='{Game}'/>
-
+		<Route path='/'>
+			<LoadFile on:send={(event)=>console.log(event.detail)}/>
+		</Route>
+		
+		<Route path='game'>
+			<Game/>
+		</Route>
 	</Router>
 </main>
 
