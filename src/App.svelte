@@ -3,16 +3,22 @@
 	import LoadFile from "./components/LoadFile.svelte";
 	import Game from "./components/Game.svelte";
 
-	 let url = "";
+	let url = "";
+	let json = null
+
+	// function sendData(event){
+	// 	json = event.detail['sudoku'];
+	// }
 
 </script>
 	
 <main>
 	<Router url="{url}">
 		<Route path='/'>
-			<LoadFile on:send={(event)=>console.log(event.detail)}/>
+			<!-- <LoadFile on:send={sendData}/> -->
+			<LoadFile/>
 		</Route>
-		
+
 		<Route path='game'>
 			<Game/>
 		</Route>

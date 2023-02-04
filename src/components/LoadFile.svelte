@@ -9,17 +9,23 @@
         const file = document.querySelector('#data').files[0]
         const text = await file.text()
         json = JSON.parse(text)
-
-        // console.log(json);
     }
 
     function sendData(){
         if(json == null){
             console.log("Nie wybrano pliku!");
         }else{
-            dispatch('send', json)
-            // console.log(json);
+            // dispatch('send', json)
+            setCookie(json['sudoku'],1)
         }
+    }
+    function setCookie(value,exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        let expires = "expires="+ d.toUTCString();
+
+        value = JSON.stringify(value)
+        document.cookie = 'sudoku=' + value + ";" + expires + ";path=/";
     }
 
 </script>
