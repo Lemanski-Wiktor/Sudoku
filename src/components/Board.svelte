@@ -1,15 +1,10 @@
 <script>
-    import { createEventDispatcher } from "svelte";
-
-    const dispatch = createEventDispatcher()
-
     export let sudoku;
-    let solvedSudoku = JSON.parse(JSON.stringify(sudoku))
+    export let solvedSudoku
     
     let rows = Array(9).fill(Array(9).fill(''));
     let cellElements = {};
     const cellId = (rowIndex, cellIndex) => `${rowIndex}-${cellIndex}`;
-    let isSolvable = true
 
     const onKeyDown = (event, rowIndex, cellIndex) => {
       if ('123456789'.includes(event.key)) {
@@ -31,51 +26,12 @@
       }
       if(event.key === 'Backspace' || event.key === 'Delete'){
         rows[rowIndex][cellIndex] = null;
-      }
-    }
+        const currentCell = document.getElementById(`${rowIndex}_${cellIndex}`)
 
-    sudokuSolver(solvedSudoku)
-    console.log(solvedSudoku);
-
-    function sendIsSolvable(){
-      if(solvedSudoku.some(row => row.includes(null))){
-        isSolvable = false
-        dispatch('isSolvable', isSolvable)
-      }
-      console.log(1);
-    }
-    
-
-    function isValid(board, row, col, k) {
-      for (let i = 0; i < 9; i++) {
-          const m = 3 * Math.floor(row / 3) + Math.floor(i / 3);
-          const n = 3 * Math.floor(col / 3) + i % 3;
-          if (board[row][i] == k || board[i][col] == k || board[m][n] == k) {
-            return false;
-          }
-      }
-      return true;
-    }
-
-    function sudokuSolver(data) {
-      for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-          if (data[i][j] == null) {
-            for (let k = 1; k <= 9; k++) {
-              if (isValid(data, i, j, k)) {
-                data[i][j] = k;
-                if (sudokuSolver(data)) {
-                return true;
-                } else {
-                data[i][j] = null;
-                }
-              }
-            }
-            return false;
-          }
+        if(![...currentCell.classList].includes('prefilled')){
+          document.getElementById(`${rowIndex}_${cellIndex}`).style.backgroundColor = 'white' 
         }
       }
-    return true;
     }
 
     function checkAnswer(value, rowIndex, cellIndex){
@@ -96,7 +52,7 @@
 
 <main>
     
-  <div id="board" on:load={sendIsSolvable}>
+  <div id="board" >
     {#each rows as row, rowIndex}
         <div class:border-bottom={(rowIndex + 1) % 3 === 0}>
           {#each row as cell, cellIndex}
