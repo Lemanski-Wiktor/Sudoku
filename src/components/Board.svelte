@@ -1,9 +1,45 @@
 <script>
   import { Confetti } from "svelte-confetti"
+  import { onMount } from 'svelte';
+  import { createEventDispatcher } from "svelte";
+
+  const dispatch = createEventDispatcher()
 
   export let sudoku;
   export let solvedSudoku
   let inputSudoku = JSON.parse(JSON.stringify(sudoku))
+  let numLeft = {
+    1: 9,
+    2: 9,
+    3: 9,
+    4: 9,
+    5: 9,
+    6: 9,
+    7: 9,
+    8: 9,
+    9: 9,
+  }
+
+  function howManyLeft(value, isDel){
+    if(value == null){
+      inputSudoku.map((arr)=>{
+        arr.map((num)=>{
+          if(num != null){
+            numLeft[num] -= 1
+          }
+        })
+      })
+      dispatch('numLeft', numLeft)
+    }else if(isDel){
+      numLeft[value] += 1
+      dispatch('numLeft', numLeft)
+    }else{
+      numLeft[value] -= 1
+      dispatch('numLeft', numLeft)
+    }
+  }
+
+  onMount(()=>{howManyLeft(null)})
   
   let rows = Array(9).fill(Array(9).fill(''));
   let cellElements = {};
@@ -15,6 +51,7 @@
       inputSudoku[rowIndex][cellIndex] = Number(event.key)
       rows[rowIndex] = rows[rowIndex].map((cell, ci) => ci === cellIndex ? event.key : cell)
       checkAnswer(event.key,rowIndex,cellIndex)
+      howManyLeft(event.key,false)
       
       checkWin()
     }
@@ -31,7 +68,10 @@
       cellElements[cellId(rowIndex + 1, cellIndex)].focus();
     }
     if(event.key === 'Backspace' || event.key === 'Delete'){
+      howManyLeft(rows[rowIndex][cellIndex],true)
+
       rows[rowIndex][cellIndex] = null;
+
       const currentCell = document.getElementById(`${rowIndex}_${cellIndex}`)
 
       if(![...currentCell.classList].includes('prefilled')){
@@ -109,13 +149,15 @@
         </div>
       {/each}
   </div>
-    
 
 </main>
 
 <style>
     main {
     text-align: center;
+  }
+  #board{
+    min-width: 450px;
   }
   #win--board{
     width: 90vw;

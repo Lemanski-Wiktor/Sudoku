@@ -1,5 +1,6 @@
 <script>
     import Board from "./Board.svelte";
+    import RestNum from "./RestNum.svelte";
     import {Link} from "svelte-routing";
 
     let decodedCookie = decodeURIComponent(document.cookie);
@@ -8,6 +9,7 @@
     const sudokuCopy = JSON.parse(JSON.stringify(sudoku))
     let solvedSudoku = JSON.parse(JSON.stringify(sudoku))
     let isSolvable = true
+    let numLeft = {}
 
     function isValid(board, row, col, k) {
       for (let i = 0; i < 9; i++) {
@@ -67,12 +69,17 @@
         btnSolve.textContent = 'Solve sudoku'
         sudoku = JSON.parse(JSON.stringify(sudokuCopy))
       }
-      
+    }
+
+    function getNumLeft(event){
+      numLeft = event.detail
     }
 
 </script>
 
 <main >
+    <h2>Sudoku Svelte</h2>
+
     <Link to='/'><span id="back">Back</span></Link>
 
     {#if !isSolvable}
@@ -81,12 +88,17 @@
         </div>
     {/if}
 
+
     <div id="content">
-      <h2>Sudoku Svelte</h2>
 
       <button id="solve" on:click={solveByClick}>Solve sudoku</button>
 
-      <Board {sudoku} {solvedSudoku}/>
+      <div id="sudoku">
+        <Board {sudoku} {solvedSudoku} on:numLeft={getNumLeft}/>
+
+        <RestNum {numLeft}/>
+      </div>
+      
 
     </div>
 
@@ -112,6 +124,11 @@
       justify-content: center;
       align-items: center;
       gap: 10px;
+    }
+    #sudoku{
+      display: flex;
+      align-items: center;
+      gap: 20px;
     }
     #solve{
       width: 100px;
