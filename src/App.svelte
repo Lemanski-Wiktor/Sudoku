@@ -2,25 +2,29 @@
 	import { Router, Link, Route } from "svelte-routing";
 	import LoadFile from "./components/LoadFile.svelte";
 	import Game from "./components/Game.svelte";
+	import NoFile from "./components/NoFile.svelte";
 
 	let url = "";
-	let json = null
+	let isSend = true
 
-	// function sendData(event){
-	// 	json = event.detail['sudoku'];
-	// }
+	function sendData(event){
+		isSend = event.detail;
+	}
 
 </script>
 	
 <main>
 	<Router url="{url}">
 		<Route path='/'>
-			<!-- <LoadFile on:send={sendData}/> -->
-			<LoadFile/>
+			<LoadFile on:send={sendData}/>
 		</Route>
 
 		<Route path='game'>
-			<Game/>
+			{#if isSend}
+				<Game/>
+			{:else}
+				<NoFile/>
+			{/if}
 		</Route>
 	</Router>
 </main>

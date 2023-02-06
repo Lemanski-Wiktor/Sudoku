@@ -5,14 +5,10 @@
     let decodedCookie = decodeURIComponent(document.cookie);
     let sudoku = decodedCookie.substring(7)
     sudoku = JSON.parse(sudoku)
+    const sudokuCopy = JSON.parse(JSON.stringify(sudoku))
     let solvedSudoku = JSON.parse(JSON.stringify(sudoku))
     let isSolvable = true
 
-    console.log(sudoku);
-    console.log(solvedSudoku);
-
-    
-    
     function isValid(board, row, col, k) {
       for (let i = 0; i < 9; i++) {
           const m = 3 * Math.floor(row / 3) + Math.floor(i / 3);
@@ -48,7 +44,30 @@
 
     if(solvedSudoku.some(row => row.includes(null))){
         isSolvable = false
-        console.log('nie');
+    }
+
+    function solveByClick(){
+      const btnSolve = document.getElementById("solve")
+
+      if(!solvedSudoku.equals(sudoku)){
+        btnSolve.textContent = 'Reset'
+        sudoku = JSON.parse(JSON.stringify(solvedSudoku))
+
+        for(let i = 0; i<sudoku.length; i++){
+          const row = sudoku[i]
+          for(let j=0; j<row.length; j++){
+            const el = document.getElementById(`${i}_${j}`)
+            if(el.style.backgroundColor == 'white'){
+              console.log(el.style.backgroundColor);
+              el.classList.add('prefilled')
+            }
+          }
+        }
+      }else{
+        btnSolve.textContent = 'Solve sudoku'
+        sudoku = JSON.parse(JSON.stringify(sudokuCopy))
+      }
+      
     }
 
 </script>
@@ -56,40 +75,62 @@
 <main >
     <Link to='/'><span id="back">Back</span></Link>
 
-    <h2>Sudoku Svelte</h2>
-
     {#if !isSolvable}
         <div id="unsolvable">
-            <h1>Nie da się rozwiązać tego sudoku!</h1>
+            <h1>That sudoku is unsolvable!</h1>
         </div>
     {/if}
-    
 
-    <Board {sudoku} {solvedSudoku}/>
+    <div id="content">
+      <h2>Sudoku Svelte</h2>
+
+      <button id="solve" on:click={solveByClick}>Solve sudoku</button>
+
+      <Board {sudoku} {solvedSudoku}/>
+
+    </div>
+
+    
 </main>
 
 <style>
     main{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     #back{
-        position: fixed;
-        top: 10vh;
-        right: 10vw;
-        z-index: 10;
+      position: fixed;
+      top: 10vh;
+      right: 10vw;
+      z-index: 10;
+    }
+    #content{
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    #solve{
+      width: 100px;
+      height: 40px;
+      font-size: 14px;
     }
     #unsolvable{
-        width: 90vw;
-        height: 90vh;
-        position: fixed;
-        top: 5vh;
-        left: 5vw;
-        background-color: grey;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        opacity: 0.8;
+      width: 90vw;
+      height: 90vh;
+      position: fixed;
+      top: 5vh;
+      left: 5vw;
+      background-color: grey;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0.8;
     }
+    .prefilled {
+    background-color: beige !important;
+  }
 </style>

@@ -4,6 +4,7 @@
 
     const dispatch = createEventDispatcher()
     let json = null
+    let isSend = true
 
     async function loadJSON(){
         const file = document.querySelector('#data').files[0]
@@ -13,9 +14,12 @@
 
     function sendData(){
         if(json == null){
+            isSend = false
+            dispatch('send',isSend)
             console.log("Nie wybrano pliku!");
         }else{
-            // dispatch('send', json)
+            isSend = true
+            dispatch('send',isSend)
             setCookie(json['sudoku'],1)
         }
     }
