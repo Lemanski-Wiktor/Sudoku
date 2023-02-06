@@ -1,6 +1,5 @@
 <script>
     import Board from "./Board.svelte";
-    import RestNum from "./RestNum.svelte";
     import {Link} from "svelte-routing";
 
     let decodedCookie = decodeURIComponent(document.cookie);
@@ -9,7 +8,9 @@
     const sudokuCopy = JSON.parse(JSON.stringify(sudoku))
     let solvedSudoku = JSON.parse(JSON.stringify(sudoku))
     let isSolvable = true
+    let isSolvedByClick = false
     let numLeft = {}
+    let numLeftCopy = {}
 
     function isValid(board, row, col, k) {
       for (let i = 0; i < 9; i++) {
@@ -52,6 +53,7 @@
       const btnSolve = document.getElementById("solve")
 
       if(!solvedSudoku.equals(sudoku)){
+        isSolvedByClick = true
         btnSolve.textContent = 'Reset'
         sudoku = JSON.parse(JSON.stringify(solvedSudoku))
 
@@ -65,14 +67,38 @@
             }
           }
         }
+
+        for(let key in numLeft){
+          numLeft[key] = 0
+        }
       }else{
+        isSolvedByClick = false
         btnSolve.textContent = 'Solve sudoku'
         sudoku = JSON.parse(JSON.stringify(sudokuCopy))
+        // console.log(numLeftCopy);
+        numLeft = JSON.parse(JSON.stringify(numLeftCopy))
+      }
+    }
+
+    function showLefts(){
+      const btnSolve = document.getElementById("showLefts")
+      const tableShow = document.getElementById("numLeft")
+      console.log(tableShow.style.display);
+
+      if(tableShow.style.display == 'none' || tableShow.style.display == ''){
+        console.log(2);
+        tableShow.style.display = 'block'
+        btnSolve.textContent = 'Hide lefts'
+      }else{
+        console.log(3);
+        tableShow.style.display = 'none'
+        btnSolve.textContent = 'Show lefts'
       }
     }
 
     function getNumLeft(event){
       numLeft = event.detail
+      numLeftCopy = JSON.parse(JSON.stringify(numLeft))
     }
 
 </script>
@@ -91,14 +117,61 @@
 
     <div id="content">
 
-      <button id="solve" on:click={solveByClick}>Solve sudoku</button>
+      <div id="manage">
+          <button id="solve" on:click={solveByClick}>Solve sudoku</button>
+          <button id="showLefts" on:click={showLefts}>Show lefts</button>
+      </div>
+     
 
       <div id="sudoku">
-        <Board {sudoku} {solvedSudoku} on:numLeft={getNumLeft}/>
+        <Board {sudoku} {solvedSudoku} {isSolvedByClick} on:numLeft={getNumLeft}/>
 
-        <RestNum {numLeft}/>
+        <div id="numLeft">
+          <table>
+            <tr>
+              <th>Value</th>
+              <th>Lefts</th>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>{numLeft[1]}</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>{numLeft[2]}</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>{numLeft[3]}</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>{numLeft[4]}</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>{numLeft[5]}</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>{numLeft[6]}</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>{numLeft[7]}</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td>{numLeft[8]}</td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td>{numLeft[9]}</td>
+            </tr>
+          </table>
+        </div>
+
       </div>
-      
 
     </div>
 
@@ -110,6 +183,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
     }
     #back{
       position: fixed;
@@ -130,10 +204,25 @@
       align-items: center;
       gap: 20px;
     }
-    #solve{
-      width: 100px;
-      height: 40px;
-      font-size: 14px;
+    #numLeft{
+      display: none;
+      width: 20vw;
+      max-width: 200px;
+      height: 253px;
+      background-color: aliceblue;
+      position: absolute;
+      top: 125px;
+      right: 0;
+    }
+    table{
+      width: 100%;
+      height: 100%;
+      border-collapse: collapse;
+      border: 1px solid black;
+      text-align: center;
+    }
+    td, th{
+      border: 1px solid black;
     }
     #unsolvable{
       width: 90vw;

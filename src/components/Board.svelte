@@ -7,6 +7,7 @@
 
   export let sudoku;
   export let solvedSudoku
+  export let isSolvedByClick
   let inputSudoku = JSON.parse(JSON.stringify(sudoku))
   let numLeft = {
     1: 9,
@@ -19,8 +20,10 @@
     8: 9,
     9: 9,
   }
+  let numLeftCopy = JSON.parse(JSON.stringify(numLeft))
 
   function howManyLeft(value, isDel){
+    
     if(value == null){
       inputSudoku.map((arr)=>{
         arr.map((num)=>{
@@ -29,14 +32,18 @@
           }
         })
       })
+
       dispatch('numLeft', numLeft)
     }else if(isDel){
       numLeft[value] += 1
       dispatch('numLeft', numLeft)
     }else{
-      numLeft[value] -= 1
+      if(numLeft[value] > 0){
+        numLeft[value] -= 1
+      }
       dispatch('numLeft', numLeft)
     }
+    numLeftCopy = JSON.parse(JSON.stringify(numLeft))
   }
 
   onMount(()=>{howManyLeft(null)})
@@ -47,9 +54,11 @@
   let isWon = false
 
   const onKeyDown = (event, rowIndex, cellIndex) => {
-    if ('123456789'.includes(event.key)) {
+    numLeft = JSON.parse(JSON.stringify(numLeftCopy))
+    if ('123456789'.includes(event.key) && inputSudoku[rowIndex][cellIndex] == null && numLeft[event.key]-1 >= 0) {
       inputSudoku[rowIndex][cellIndex] = Number(event.key)
       rows[rowIndex] = rows[rowIndex].map((cell, ci) => ci === cellIndex ? event.key : cell)
+      
       checkAnswer(event.key,rowIndex,cellIndex)
       howManyLeft(event.key,false)
       
@@ -67,16 +76,20 @@
     if ((event.key === 'ArrowDown' || event.key === 'Enter') && rowIndex < 8) {
       cellElements[cellId(rowIndex + 1, cellIndex)].focus();
     }
-    if(event.key === 'Backspace' || event.key === 'Delete'){
-      howManyLeft(rows[rowIndex][cellIndex],true)
+    if((event.key === 'Backspace' || event.key === 'Delete') && !isSolvedByClick){
+      if(rows[rowIndex][cellIndex] != '' && rows[rowIndex][cellIndex] != null){
+        howManyLeft(rows[rowIndex][cellIndex],true)
 
-      rows[rowIndex][cellIndex] = null;
+        rows[rowIndex][cellIndex] = null;
+        inputSudoku[rowIndex][cellIndex] = null
 
-      const currentCell = document.getElementById(`${rowIndex}_${cellIndex}`)
+        const currentCell = document.getElementById(`${rowIndex}_${cellIndex}`)
 
-      if(![...currentCell.classList].includes('prefilled')){
-        document.getElementById(`${rowIndex}_${cellIndex}`).style.backgroundColor = '' 
+        if(![...currentCell.classList].includes('prefilled')){
+          document.getElementById(`${rowIndex}_${cellIndex}`).style.backgroundColor = '' 
+        }
       }
+      
     }
   }
 
