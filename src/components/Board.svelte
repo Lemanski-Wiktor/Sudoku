@@ -8,19 +8,17 @@
   export let sudoku;
   export let solvedSudoku
   export let isSolvedByClick
+  export let isHints
+  $: isHints = isHints
+  
   let inputSudoku = JSON.parse(JSON.stringify(sudoku))
-  let numLeft = {
-    1: 9,
-    2: 9,
-    3: 9,
-    4: 9,
-    5: 9,
-    6: 9,
-    7: 9,
-    8: 9,
-    9: 9,
-  }
+  let hintsSudoku = JSON.parse(JSON.stringify(sudoku))
+  let numLeft = {1: 9, 2: 9, 3: 9, 4: 9, 5: 9, 6: 9, 7: 9, 8: 9, 9: 9,}
   let numLeftCopy = JSON.parse(JSON.stringify(numLeft))
+  let rows = Array(9).fill(Array(9).fill(''));
+  let cellElements = {};
+  const cellId = (rowIndex, cellIndex) => `${rowIndex}-${cellIndex}`;
+  let isWon = false
 
   function howManyLeft(value, isDel){
     
@@ -48,22 +46,79 @@
 
   onMount(()=>{howManyLeft(null)})
   
-  let rows = Array(9).fill(Array(9).fill(''));
-  let cellElements = {};
-  const cellId = (rowIndex, cellIndex) => `${rowIndex}-${cellIndex}`;
-  let isWon = false
-
   const onKeyDown = (event, rowIndex, cellIndex) => {
-    numLeft = JSON.parse(JSON.stringify(numLeftCopy))
-    if ('123456789'.includes(event.key) && inputSudoku[rowIndex][cellIndex] == null && numLeft[event.key]-1 >= 0) {
-      inputSudoku[rowIndex][cellIndex] = Number(event.key)
-      rows[rowIndex] = rows[rowIndex].map((cell, ci) => ci === cellIndex ? event.key : cell)
+    const currentCell = document.getElementById(`${rowIndex}_${cellIndex}`)
+
+      console.log(hintsSudoku);
+
+
+    if(('123456789'.includes(event.key) || event.key === 'Backspace' || event.key === 'Delete') && isHints && ![...currentCell.classList].includes('prefilled') && !isSolvedByClick && (currentCell.style.backgroundColor != 'rgb(188, 71, 73)' && currentCell.style.backgroundColor != 'rgb(167, 201, 87)')){
+
+      if('123456789'.includes(event.key)){
+        if(rows[rowIndex][cellIndex] == '' || rows[rowIndex][cellIndex] == null){
+          hintsSudoku[rowIndex][cellIndex] = event.key; 
+          rows[rowIndex] =  rows[rowIndex].map((cell, ci) => ci === cellIndex ? event.key : cell)
+        }else{
+
+          hintsSudoku[rowIndex][cellIndex] += `,${event.key}`; 
+          
+          rows[rowIndex] = rows[rowIndex].map((cell, ci) => {
+            if(ci === cellIndex){
+              return hintsSudoku[rowIndex][cellIndex]
+            }else{
+              return cell
+            }
+          })
+        }
+        currentCell.style.backgroundColor = 'cornflowerblue'
+        currentCell.style.textAlign = 'left'
+      }
+      if((event.key === 'Backspace' || event.key === 'Delete') && !isSolvedByClick && hintsSudoku[rowIndex][cellIndex] != null && rows[rowIndex][cellIndex] != ''){
+
+        hintsSudoku[rowIndex][cellIndex] = hintsSudoku[rowIndex][cellIndex].substring(0,event.target.selectionStart-2)
+         
+        rows[rowIndex] = rows[rowIndex].map((cell, ci) => {
+          if(ci === cellIndex){
+            return hintsSudoku[rowIndex][cellIndex]
+          }else{
+            return cell
+          }
+        })
+
+        console.log(hintsSudoku);
+        if(hintsSudoku[rowIndex][cellIndex] == null || hintsSudoku[rowIndex][cellIndex] == ''){
+          currentCell.style.backgroundColor = ''
+        }
+      }
       
-      checkAnswer(event.key,rowIndex,cellIndex)
-      howManyLeft(event.key,false)
-      
-      checkWin()
+
+    }else if(!isSolvedByClick){
+      currentCell.style.textAlign = 'center'
+      numLeft = JSON.parse(JSON.stringify(numLeftCopy))
+
+      if ('123456789'.includes(event.key) && inputSudoku[rowIndex][cellIndex] == null && numLeft[event.key]-1 >= 0) {
+        inputSudoku[rowIndex][cellIndex] = Number(event.key)
+        rows[rowIndex] = rows[rowIndex].map((cell, ci) => ci === cellIndex ? event.key : cell)
+        
+        checkAnswer(event.key,rowIndex,cellIndex)
+        howManyLeft(event.key,false)
+        
+        checkWin()
+      }
+      if((event.key === 'Backspace' || event.key === 'Delete') && !isSolvedByClick){
+        if(rows[rowIndex][cellIndex] != '' && rows[rowIndex][cellIndex] != null){
+          howManyLeft(rows[rowIndex][cellIndex],true)
+          rows[rowIndex][cellIndex] = '';
+          inputSudoku[rowIndex][cellIndex] = null
+
+          if(![...currentCell.classList].includes('prefilled')){
+            document.getElementById(`${rowIndex}_${cellIndex}`).style.backgroundColor = '' 
+          }
+        }
+      }
+      console.log(rows);
     }
+
     if (event.key === 'ArrowLeft' && cellIndex > 0) {
       cellElements[cellId(rowIndex, cellIndex - 1)].focus();
     }
@@ -75,21 +130,6 @@
     }
     if ((event.key === 'ArrowDown' || event.key === 'Enter') && rowIndex < 8) {
       cellElements[cellId(rowIndex + 1, cellIndex)].focus();
-    }
-    if((event.key === 'Backspace' || event.key === 'Delete') && !isSolvedByClick){
-      if(rows[rowIndex][cellIndex] != '' && rows[rowIndex][cellIndex] != null){
-        howManyLeft(rows[rowIndex][cellIndex],true)
-
-        rows[rowIndex][cellIndex] = null;
-        inputSudoku[rowIndex][cellIndex] = null
-
-        const currentCell = document.getElementById(`${rowIndex}_${cellIndex}`)
-
-        if(![...currentCell.classList].includes('prefilled')){
-          document.getElementById(`${rowIndex}_${cellIndex}`).style.backgroundColor = '' 
-        }
-      }
-      
     }
   }
 
@@ -145,22 +185,24 @@
   {/if}
     
   <div id="board" >
+   
     {#each rows as row, rowIndex}
-        <div class:border-bottom={(rowIndex + 1) % 3 === 0}>
-          {#each row as cell, cellIndex}
-              <input
-                id='{rowIndex}_{cellIndex}'
-                bind:this={cellElements[cellId(rowIndex, cellIndex)]}
-                type='text'
-                class='cell'
-                class:border-right={(cellIndex + 1) % 3 === 0}
-                class:prefilled={sudoku[rowIndex][cellIndex]}
-                value={sudoku[rowIndex][cellIndex] || cell}
-                on:keydown|preventDefault={e => onKeyDown(e, rowIndex, cellIndex)}
-          />
-          {/each}
-        </div>
-      {/each}
+      <div class:border-bottom={(rowIndex + 1) % 3 === 0}>
+        {#each row as cell, cellIndex}
+            <input
+              id='{rowIndex}_{cellIndex}'
+              bind:this={cellElements[cellId(rowIndex, cellIndex)]}
+              type='text'
+              class='cell'
+              class:border-right={(cellIndex + 1) % 3 === 0}
+              class:prefilled={sudoku[rowIndex][cellIndex]}
+              value={sudoku[rowIndex][cellIndex] || cell}
+              on:keydown|preventDefault={e => onKeyDown(e, rowIndex, cellIndex)}
+        />
+        {/each}
+      </div>
+    {/each}
+    
   </div>
 
 </main>
@@ -182,6 +224,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 10;
   }
   .cell {
     display: inline-block;
@@ -199,13 +242,5 @@
   }
   .prefilled {
     background-color: beige;
-  }
-  .correct{
-    background-color: #a7c957 !important; 
-    color: black !important;
-  }
-  .wrong{
-    background-color: #bc4749 !important;
-    color: black !important;
   }
 </style>

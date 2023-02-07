@@ -11,6 +11,7 @@
     let isSolvedByClick = false
     let numLeft = {}
     let numLeftCopy = {}
+    let isHints = false
 
     function isValid(board, row, col, k) {
       for (let i = 0; i < 9; i++) {
@@ -83,14 +84,11 @@
     function showLefts(){
       const btnSolve = document.getElementById("showLefts")
       const tableShow = document.getElementById("numLeft")
-      console.log(tableShow.style.display);
 
       if(tableShow.style.display == 'none' || tableShow.style.display == ''){
-        console.log(2);
         tableShow.style.display = 'block'
         btnSolve.textContent = 'Hide lefts'
       }else{
-        console.log(3);
         tableShow.style.display = 'none'
         btnSolve.textContent = 'Show lefts'
       }
@@ -99,6 +97,10 @@
     function getNumLeft(event){
       numLeft = event.detail
       numLeftCopy = JSON.parse(JSON.stringify(numLeft))
+    }
+    function sendHintsStatus(){
+      isHints = document.getElementById('hints').checked
+      // console.log(isHints);
     }
 
 </script>
@@ -118,13 +120,17 @@
     <div id="content">
 
       <div id="manage">
+          <label for="hints">Hints</label>
+          <input type="checkbox" name="hints" id="hints" on:change={sendHintsStatus}>
+
           <button id="solve" on:click={solveByClick}>Solve sudoku</button>
           <button id="showLefts" on:click={showLefts}>Show lefts</button>
+          
       </div>
      
 
       <div id="sudoku">
-        <Board {sudoku} {solvedSudoku} {isSolvedByClick} on:numLeft={getNumLeft}/>
+        <Board {sudoku} {solvedSudoku} {isSolvedByClick} {isHints} on:numLeft={getNumLeft}/>
 
         <div id="numLeft">
           <table>
@@ -189,7 +195,7 @@
       position: fixed;
       top: 10vh;
       right: 10vw;
-      z-index: 10;
+      z-index: 100;
     }
     #content{
       width: 100%;
@@ -199,6 +205,20 @@
       align-items: center;
       gap: 10px;
     }
+    #manage{
+      width: 100vw;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      padding: 10px;
+      border: 1px solid black;
+    }
+    #manage>*{
+      margin: 0;
+    }
+    
     #sudoku{
       display: flex;
       align-items: center;
@@ -211,8 +231,8 @@
       height: 253px;
       background-color: aliceblue;
       position: absolute;
-      top: 125px;
-      right: 0;
+      top: 100px;
+      right: 5vw;
     }
     table{
       width: 100%;

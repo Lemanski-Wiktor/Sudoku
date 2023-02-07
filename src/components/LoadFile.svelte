@@ -13,6 +13,14 @@
     }
 
     function sendData(){
+        for (let key in json){
+            if((json[key]).length != 9){
+                isSend = false
+                dispatch('send',isSend)
+                console.log("Zły format pliku!");
+                return
+            }
+        }
         if(json == null){
             isSend = false
             dispatch('send',isSend)
