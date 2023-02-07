@@ -182,7 +182,7 @@
   {#if isWon}
     <div id="win--board">
       <Confetti iterationCount=infinite/>
-      <h1>Congratulations! You won!</h1>
+        <h1>Congratulations! You won!</h1>
       <Confetti iterationCount=infinite/>
     </div>
     
@@ -219,16 +219,17 @@
     min-width: 450px;
   }
   #win--board{
-    width: 90vw;
-    height: 90vh;
+    width: 100%;
+    height: 100%;
     position: fixed;
-    top: 5vh;
-    left: 5vw;
-    background-color: grey;
+    top: 70px;
+    left: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 10;
+    font-size: 30px;
+    color: white;
   }
   .cell {
     display: inline-block;
@@ -237,14 +238,15 @@
     border: 1px solid black;
     margin: 0;
     text-align: center;
+    background-color: #f3e9dc;
   }
   .border-bottom {
-    border-bottom: 2px solid black;
+    border-bottom: 2px solid #774936;
   }
   .border-right {
-    border-right: 2px solid black;
+    border-right: 2px solid #774936;
   }
   .prefilled {
-    background-color: beige;
+    background-color: #cd9777;
   }
 </style>

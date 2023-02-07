@@ -28,6 +28,7 @@
         }else{
             isSend = true
             dispatch('send',isSend)
+            dispatch('data',json)
             setCookie(json['sudoku'],1)
         }
     }
@@ -53,6 +54,7 @@
 <style>
     form{
         width: 55vw;
+        max-width: 500px;
         height: 40vh;
         display: flex;
         flex-direction: column;
@@ -60,9 +62,14 @@
         justify-content: space-evenly;
         background-color: azure;
         border: 1px solid black;
-        box-shadow: 0 1px 5px 1px black;
+        box-shadow: 0 1px 20px 1px black;
     }
     #data{
         width: 250px;
+    }
+    button{
+        background-color: #ffc857;
+        width: 100px;
+        height: 40px;
     }
 </style>

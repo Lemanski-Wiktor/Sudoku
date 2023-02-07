@@ -57,6 +57,8 @@
       if(!solvedSudoku.equals(sudoku)){
         isSolvedByClick = true
         btnSolve.textContent = 'Reset'
+        btnSolve.style.border = '2px solid #a7c957'
+        btnSolve.style.backgroundColor = '#55dde0'
         sudoku = JSON.parse(JSON.stringify(solvedSudoku))
 
         for(let i = 0; i<sudoku.length; i++){
@@ -76,6 +78,8 @@
       }else{
         isSolvedByClick = false
         btnSolve.textContent = 'Solve sudoku'
+        btnSolve.style.border = '2px solid #55dde0'
+        btnSolve.style.backgroundColor = '#a7c957'
         sudoku = JSON.parse(JSON.stringify(sudokuCopy))
         // console.log(numLeftCopy);
         numLeft = JSON.parse(JSON.stringify(numLeftCopy))
@@ -89,9 +93,13 @@
       if(tableShow.style.display == 'none' || tableShow.style.display == ''){
         tableShow.style.display = 'block'
         btnSolve.textContent = 'Hide lefts'
+        btnSolve.style.border = '2px solid #e76f51'
+        btnSolve.style.backgroundColor = '#55dde0'
       }else{
         tableShow.style.display = 'none'
         btnSolve.textContent = 'Show lefts'
+        btnSolve.style.border = '2px solid #55dde0'
+        btnSolve.style.backgroundColor = '#e76f51'
       }
     }
 
@@ -123,87 +131,89 @@
 
 </script>
 
-<main >
-    <h2>Sudoku Svelte</h2>
+<main>
+  <nav>
+    <h1>Sudoku Svelte</h1>
 
-    <Link to='/'><span id="back">Back</span></Link>
+    <Link to='/'><button id="back--btn" style="vertical-align:middle"><span>Back </span></button></Link>
+  </nav>
+    
 
-    {#if !isSolvable}
-        <div id="unsolvable">
-            <h1>That sudoku is unsolvable!</h1>
-        </div>
-    {/if}
-
-
-    <div id="content">
-
-      <div id="manage">
-          <label for="hints">Hints</label>
-          <input type="checkbox" name="hints" id="hints" on:change={sendHintsStatus}>
-          <button id="erase" on:click={setErase}>Erase hints</button>
-
-          <button id="solve" on:click={solveByClick}>Solve sudoku</button>
-          <button id="showLefts" on:click={showLefts}>Show lefts</button>
-
-          <button id="print--board" on:click={()=>{window.print()}}>Print board</button>
-          
+  {#if !isSolvable}
+      <div id="unsolvable">
+          <h1>This sudoku is unsolvable!</h1>
       </div>
-     
+  {/if}
 
-      <div id="sudoku">
-        <div id="board">
-          <Board {sudoku} {solvedSudoku} {isSolvedByClick} {isHints} {hints} on:numLeft={getNumLeft} on:hints={getHints}/>
-        </div>
 
-        <div id="numLeft">
-          <table>
-            <tr>
-              <th>Value</th>
-              <th>Lefts</th>
-            </tr>
-            <tr>
-              <td>1</td>
-              <td>{numLeft[1]}</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>{numLeft[2]}</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>{numLeft[3]}</td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>{numLeft[4]}</td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td>{numLeft[5]}</td>
-            </tr>
-            <tr>
-              <td>6</td>
-              <td>{numLeft[6]}</td>
-            </tr>
-            <tr>
-              <td>7</td>
-              <td>{numLeft[7]}</td>
-            </tr>
-            <tr>
-              <td>8</td>
-              <td>{numLeft[8]}</td>
-            </tr>
-            <tr>
-              <td>9</td>
-              <td>{numLeft[9]}</td>
-            </tr>
-          </table>
-        </div>
+  <div id="content">
 
+    <div id="manage">
+        <label for="hints" style="color: #55dde0; font-size: 20px; margin-top:-6px">Hints</label>
+        <input type="checkbox" name="hints" id="hints" on:change={sendHintsStatus}>
+        <button class="manage--btn" id="erase" on:click={setErase}>Erase hints</button>
+
+        <button class="manage--btn" id="solve" on:click={solveByClick}>Solve sudoku</button>
+        <button class="manage--btn" id="showLefts" on:click={showLefts}>Show lefts</button>
+
+        <button class="manage--btn" id="print--board" on:click={()=>{window.print()}}>Print board</button>
+        
+    </div>
+    
+
+    <div id="sudoku">
+      <div id="board">
+        <Board {sudoku} {solvedSudoku} {isSolvedByClick} {isHints} {hints} on:numLeft={getNumLeft} on:hints={getHints}/>
+      </div>
+
+      <div id="numLeft">
+        <table>
+          <tr>
+            <th>Value</th>
+            <th>Lefts</th>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>{numLeft[1]}</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>{numLeft[2]}</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>{numLeft[3]}</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>{numLeft[4]}</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>{numLeft[5]}</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>{numLeft[6]}</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>{numLeft[7]}</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>{numLeft[8]}</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>{numLeft[9]}</td>
+          </tr>
+        </table>
       </div>
 
     </div>
 
+  </div>
     
 </main>
 
@@ -214,11 +224,39 @@
       align-items: center;
       position: relative;
     }
-    #back{
+    nav{
+      width: 100vw;
+      height: 70px;
+      background-color: #55dde0;
       position: fixed;
-      top: 10vh;
-      right: 10vw;
+      top: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+    }
+    nav>h1{
+      font-size: 30px;
+      color: #084c61;
+    }
+    #erase{
+      background-color: #f4a261;
+    }
+    #solve{
+      background-color: #a7c957;
+    }
+    #showLefts{
+      background-color: #e76f51;
+    }
+    #print--board{
+      background-color: #2a9d8f;
+    }
+    #back--btn{
+      position: absolute;
+      top: 14px;
+      right: 20px;
       z-index: 100;
+      margin: 0;
     }
     #content{
       width: 100%;
@@ -235,13 +273,18 @@
       justify-content: center;
       align-items: center;
       gap: 20px;
-      padding: 10px;
+      padding: 15px;
       border: 1px solid black;
+      margin-top: 50px;
+      margin-bottom: 50px;
     }
     #manage>*{
       margin: 0;
     }
-    
+    .manage--btn{
+      width: 120px;
+      border: 2px solid #55dde0;
+    }
     #sudoku{
       display: flex;
       align-items: center;
@@ -254,25 +297,26 @@
       height: 253px;
       background-color: aliceblue;
       position: absolute;
-      top: 100px;
-      right: 5vw;
+      top: 178px;
+      right: 17vw;
     }
     table{
       width: 100%;
       height: 100%;
       border-collapse: collapse;
-      border: 1px solid black;
+      border: 2px solid #774936;
       text-align: center;
+      background-color: #c38e70;
+      color: white;
     }
     td, th{
-      border: 1px solid black;
+      border: 1px solid #774936;
     }
     #unsolvable{
-      width: 90vw;
-      height: 90vh;
+      width: 100%;
+      height: 100%;
       position: fixed;
-      top: 5vh;
-      left: 5vw;
+      top: 70px;
       background-color: grey;
       display: flex;
       justify-content: center;
@@ -280,7 +324,7 @@
       opacity: 0.8;
     }
     .prefilled {
-    background-color: beige !important;
+    background-color: #c08552 !important;
   }
   @media print{
     main *:not(#content):not(#sudoku):not(#board):not(#board *){
