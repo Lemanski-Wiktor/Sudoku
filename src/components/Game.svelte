@@ -12,6 +12,7 @@
     let numLeft = {}
     let numLeftCopy = {}
     let isHints = false
+    let hints = null
 
     function isValid(board, row, col, k) {
       for (let i = 0; i < 9; i++) {
@@ -100,7 +101,24 @@
     }
     function sendHintsStatus(){
       isHints = document.getElementById('hints').checked
-      // console.log(isHints);
+    }
+    function getHints(event){
+      hints = event.detail
+    }
+    function setErase(){
+      if(hints != null){
+        for(let i = 0; i<hints.length; i++){
+          const row = hints[i]
+          for(let j=0; j<row.length; j++){
+            const currentCell = document.getElementById(`${i}_${j}`)
+
+            if(typeof row[j] == 'string' && currentCell.style.backgroundColor == 'cornflowerblue'){
+              hints[i][j] = null
+              currentCell.style.backgroundColor = ''
+            }
+          }
+        }
+      }
     }
 
 </script>
@@ -122,15 +140,20 @@
       <div id="manage">
           <label for="hints">Hints</label>
           <input type="checkbox" name="hints" id="hints" on:change={sendHintsStatus}>
+          <button id="erase" on:click={setErase}>Erase hints</button>
 
           <button id="solve" on:click={solveByClick}>Solve sudoku</button>
           <button id="showLefts" on:click={showLefts}>Show lefts</button>
+
+          <button id="print--board" on:click={()=>{window.print()}}>Print board</button>
           
       </div>
      
 
       <div id="sudoku">
-        <Board {sudoku} {solvedSudoku} {isSolvedByClick} {isHints} on:numLeft={getNumLeft}/>
+        <div id="board">
+          <Board {sudoku} {solvedSudoku} {isSolvedByClick} {isHints} {hints} on:numLeft={getNumLeft} on:hints={getHints}/>
+        </div>
 
         <div id="numLeft">
           <table>
@@ -259,4 +282,10 @@
     .prefilled {
     background-color: beige !important;
   }
+  @media print{
+    main *:not(#content):not(#sudoku):not(#board):not(#board *){
+      visibility: hidden;
+    }
+  }
+
 </style>

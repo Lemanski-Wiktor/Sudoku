@@ -7,12 +7,20 @@
 
   export let sudoku;
   export let solvedSudoku
+  let inputSudoku = JSON.parse(JSON.stringify(sudoku))
+  let hintsSudoku = JSON.parse(JSON.stringify(sudoku))
   export let isSolvedByClick
   export let isHints
   $: isHints = isHints
   
-  let inputSudoku = JSON.parse(JSON.stringify(sudoku))
-  let hintsSudoku = JSON.parse(JSON.stringify(sudoku))
+  export let hints
+  $: {
+    if(hints != null){
+      hintsSudoku = JSON.parse(JSON.stringify(hints))
+      rows = JSON.parse(JSON.stringify(hintsSudoku))
+    }
+  }
+
   let numLeft = {1: 9, 2: 9, 3: 9, 4: 9, 5: 9, 6: 9, 7: 9, 8: 9, 9: 9,}
   let numLeftCopy = JSON.parse(JSON.stringify(numLeft))
   let rows = Array(9).fill(Array(9).fill(''));
@@ -49,9 +57,6 @@
   const onKeyDown = (event, rowIndex, cellIndex) => {
     const currentCell = document.getElementById(`${rowIndex}_${cellIndex}`)
 
-      console.log(hintsSudoku);
-
-
     if(('123456789'.includes(event.key) || event.key === 'Backspace' || event.key === 'Delete') && isHints && ![...currentCell.classList].includes('prefilled') && !isSolvedByClick && (currentCell.style.backgroundColor != 'rgb(188, 71, 73)' && currentCell.style.backgroundColor != 'rgb(167, 201, 87)')){
 
       if('123456789'.includes(event.key)){
@@ -85,12 +90,11 @@
           }
         })
 
-        console.log(hintsSudoku);
         if(hintsSudoku[rowIndex][cellIndex] == null || hintsSudoku[rowIndex][cellIndex] == ''){
           currentCell.style.backgroundColor = ''
         }
       }
-      
+      dispatch('hints', hintsSudoku)
 
     }else if(!isSolvedByClick){
       currentCell.style.textAlign = 'center'
@@ -116,7 +120,7 @@
           }
         }
       }
-      console.log(rows);
+      dispatch('hints', rows)
     }
 
     if (event.key === 'ArrowLeft' && cellIndex > 0) {
